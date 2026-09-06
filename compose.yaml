@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    container_name: panopti_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: panopti
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: panopti_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
