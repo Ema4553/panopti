@@ -30,8 +30,8 @@ def creer_projet(request):
                 options = options_form.save(commit=False) # car le projet n'existe pas encore (clé étrangère) alors cela prépare les options mais ne les enregistre pas encore, comme pour les pièces
                 options.projet = projet
                 options.save()
-            return redirect("planner:detail_projet", projet_id=projet.id)
-            
+            #return redirect("planner:detail_projet", projet_id=projet.id)    TODO : à remettre à la fin du test
+            return redirect("planner:creer_projet")
 
     else:
         projet_form = ProjetForm()

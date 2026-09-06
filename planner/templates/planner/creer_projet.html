@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveau projet</title>
+</head>
+<body>
+    <h1>Nouveau projet</h1>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <section>
+            <h2>Informations du projet</h2>
+            {{ projet_form.as_p }}
+        </section>
+
+        <section>
+            <h2>Pièces à découper</h2>
+            {{ piece_formset.management_form }}
+            {% for form in piece_formset %}
+                <div>
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </section>
+
+        <section>
+            <h2>Options de coupe</h2>
+            {{ options_form.as_p }}
+        </section>
+
+        <button type="submit">
+            Calculer
+        </button>
+    </form>
+</body>
+</html>

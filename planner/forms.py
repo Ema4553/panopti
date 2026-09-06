@@ -1,5 +1,6 @@
 from django import forms
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory, BaseModelFormSet
+from django.core.exceptions import ValidationError
 
 from .models import (
     Projet,
@@ -34,6 +35,29 @@ class ProjetForm(forms.ModelForm):
             }),
             "panneau_type": forms.Select(),
         }
+
+
+# ------------------------------------------------------------------------------------------------
+# Permet de vérifier qu'il y a au moins une pièce à fabriquer renseignée
+class BasePieceRequiseFormSet(BaseModelFormSet):
+    def clean(self):
+        super().clean()
+
+        if any(self.errors):
+            return
+
+        pieces_renseignees = 0
+
+        for form in self.forms:
+            if not form.cleaned_data:
+                continue
+            if form.cleaned_data.get("DELETE"):
+                continue
+            if form.cleaned_data.get("designation"):
+                pieces_renseignees += 1
+
+        if pieces_renseignees == 0:
+            raise ValidationError("Ajoutez au moins une pièce à découper !")
 
 
 # ------------------------------------------------------------------------------------------------
@@ -82,6 +106,7 @@ class OptionsDeCoupeForm(forms.ModelForm):
 PieceRequiseFormSet = modelformset_factory(
     PieceRequise,
     form=PieceRequiseForm,
+    formset=BasePieceRequiseFormSet,
     extra=1,
     can_delete=True,
 )
