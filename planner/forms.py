@@ -63,6 +63,11 @@ class BasePieceRequiseFormSet(BaseModelFormSet):
 # ------------------------------------------------------------------------------------------------
 # Définition du formulaire de création d'une pièce à fabriquer
 class PieceRequiseForm(forms.ModelForm):
+    longueur = forms.IntegerField(min_value=1)
+    largeur = forms.IntegerField(min_value=1)
+    epaisseur = forms.IntegerField(min_value=1)
+    quantite = forms.IntegerField(min_value=1)
+
     class Meta:
         model = PieceRequise
         fields = [
@@ -108,5 +113,6 @@ PieceRequiseFormSet = modelformset_factory(
     form=PieceRequiseForm,
     formset=BasePieceRequiseFormSet,
     extra=1,
-    can_delete=True,
+    max_num=200,
+    can_delete=False,
 )

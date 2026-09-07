@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -19,12 +20,28 @@
 
         <section>
             <h2>Pièces à découper</h2>
+            {{ piece_formset.non_form_errors }}
             {{ piece_formset.management_form }}
-            {% for form in piece_formset %}
-                <div>
-                    {{ form.as_p }}
+            <div id="pieces-container">
+                {% for form in piece_formset %}
+                    <div class="piece-form">
+                        {{ form.as_p }}
+
+                        <button type="button" class="remove-piece">Supprimer</button>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <template id="empty-piece-form">
+                <div class="piece-form">
+                    {{ piece_formset.empty_form.as_p }}
+                
+                    <button type="button" class="remove-piece">Supprimer</button>
                 </div>
-            {% endfor %}
+            </template>
+
+            <button type="button" id="add-piece">+ Ajouter une pièce</button>
+
         </section>
 
         <section>
@@ -36,5 +53,7 @@
             Calculer
         </button>
     </form>
+
+    <script src="{% static 'planner/js/creer-projet.js' %}"></script>
 </body>
 </html>
