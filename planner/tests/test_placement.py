@@ -282,3 +282,135 @@ def test_piece_rentre_avec_kerf_exact():
     )
 
     assert len(candidats) == 1
+
+# Fonction qui teste le cas où la pièce a un grain dans la longueur, donc pas de rotation de la pièce autorisée
+def test_grain_length_interdit_rotation_si_strict():
+    piece = Piece(
+        designation="Façade",
+        largeur=400,
+        longueur=800,
+        grain_direction="length",
+    )
+
+    zone = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=1000,
+    )
+
+    candidats = trouver_candidats(
+        piece=piece,
+        zones_libres=[zone],
+        placements_existants=[],
+        rotation_autorisee=True,
+        grain_strict=True,
+    )
+
+    assert len(candidats) == 1
+    assert candidats[0].retournee is False
+
+# Fonction qui teste le cas où la pièce a un grain dans la largeur, donc rotation de la pièce nécessaire
+def test_grain_width_impose_rotation_si_strict():
+    piece = Piece(
+        designation="Façade",
+        largeur=400,
+        longueur=800,
+        grain_direction="width",
+    )
+
+    zone = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=1000,
+    )
+
+    candidats = trouver_candidats(
+        piece=piece,
+        zones_libres=[zone],
+        placements_existants=[],
+        rotation_autorisee=True,
+        grain_strict=True,
+    )
+
+    assert len(candidats) == 1
+    assert candidats[0].retournee is True
+
+# Fonction qui teste le cas où la pièce n'a pas de sens de grain défini (null/none), donc rotation autorisé
+def test_grain_null_n_impose_aucune_orientation():
+    piece = Piece(
+        designation="Étagère",
+        largeur=400,
+        longueur=800,
+        grain_direction=None,
+    )
+
+    zone = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=1000,
+    )
+
+    candidats = trouver_candidats(
+        piece=piece,
+        zones_libres=[zone],
+        placements_existants=[],
+        rotation_autorisee=True,
+        grain_strict=True,
+    )
+
+    assert len(candidats) == 2
+
+# Fonction
+def test_grain_non_strict_autorise_rotation():
+    piece = Piece(
+        designation="Façade",
+        largeur=400,
+        longueur=800,
+        grain_direction="length",
+    )
+
+    zone = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=1000,
+    )
+
+    candidats = trouver_candidats(
+        piece=piece,
+        zones_libres=[zone],
+        placements_existants=[],
+        rotation_autorisee=True,
+        grain_strict=False,
+    )
+
+    assert len(candidats) == 2
+
+# Fonction qui teste le cas où le grain est défini dans la largeur, et qu'il faut le respecter car grain_strict = true donc rend impossible le placement de la pièce
+def test_grain_strict_et_rotation_interdite_rend_piece_impossible():
+    piece = Piece(
+        designation="Façade",
+        largeur=400,
+        longueur=800,
+        grain_direction="width",
+    )
+
+    zone = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=1000,
+    )
+
+    candidats = trouver_candidats(
+        piece=piece,
+        zones_libres=[zone],
+        placements_existants=[],
+        rotation_autorisee=False,
+        grain_strict=True,
+    )
+
+    assert candidats == []

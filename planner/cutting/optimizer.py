@@ -59,7 +59,8 @@ def optimiser_decoupe(
         pieces: list[Piece],
         panneau: Rectangle,
         rotation_autorisee: bool = True,
-        epaisseur_lame: int = 0
+        epaisseur_lame: int = 0,
+        grain_strict: bool = False
 ) -> ResultatOptimisation:
     panneaux: list[PanneauEnCours] = []
     pieces_non_placees: list[Piece] = []
@@ -75,7 +76,8 @@ def optimiser_decoupe(
                 zones_libres=panneau_en_cours.zones_libres,
                 placements_existants=[],
                 rotation_autorisee=rotation_autorisee,
-                epaisseur_lame=epaisseur_lame
+                epaisseur_lame=epaisseur_lame,
+                grain_strict=grain_strict
             )
 
             candidat = choisir_meilleur_candidat(candidats)
@@ -103,7 +105,8 @@ def optimiser_decoupe(
             zones_libres=nouveau_panneau.zones_libres,
             placements_existants=[],
             rotation_autorisee=rotation_autorisee,
-            epaisseur_lame=epaisseur_lame
+            epaisseur_lame=epaisseur_lame,
+            grain_strict=grain_strict
         )
 
         candidat = choisir_meilleur_candidat(candidats)
