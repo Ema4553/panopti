@@ -48,3 +48,34 @@ def test_decoupe_exacte_ne_cree_pas_de_zone_vide():
     )
 
     assert zones == []
+
+# Fonction qui teste la découpe avec une épaisseur de lame
+def test_decouper_zone_avec_kerf():
+    zone = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=1000,
+    )
+
+    zones = decouper_zone(
+        zone=zone,
+        largeur_piece=600,
+        longueur_piece=600,
+        epaisseur_lame=5,
+    )
+
+    assert zones == [
+        Rectangle(
+            x=605,
+            y=0,
+            largeur=395,
+            longueur=600,
+        ),
+        Rectangle(
+            x=0,
+            y=605,
+            largeur=1000,
+            longueur=395,
+        ),
+    ]

@@ -137,3 +137,34 @@ def test_optimizer_utilise_la_rotation():
     assert placement.retournee is True
     assert placement.largeur == 400
     assert placement.longueur == 800
+
+# Fonction qui teste si le nombre de panneau augmente en prenant en compte le trait de coupe (épaisseur de lame)
+def test_optimizer_prend_en_compte_le_kerf():
+    panneau = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=1000,
+    )
+
+    pieces = [
+        Piece(
+            designation="Pièce 1",
+            largeur=600,
+            longueur=1000,
+        ),
+        Piece(
+            designation="Pièce 2",
+            largeur=396,
+            longueur=1000,
+        ),
+    ]
+
+    resultat = optimiser_decoupe(
+        pieces=pieces,
+        panneau=panneau,
+        rotation_autorisee=False,
+        epaisseur_lame=5,
+    )
+
+    assert len(resultat.panneaux) == 2

@@ -232,3 +232,53 @@ def test_choisir_meilleur_candidat():
 
     assert meilleur is not None
     assert meilleur.zone == zones[1]
+
+# Fonction qui teste si la zone restante est bien réduite à cause du trait de coupe (épaisseur de lame)
+def test_kerf_reduit_la_zone_restante():
+    piece = Piece(
+        designation="Pièce",
+        largeur=600,
+        longueur=400,
+    )
+
+    zone = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=1000,
+    )
+
+    candidats = trouver_candidats(
+        piece=piece,
+        zones_libres=[zone],
+        placements_existants=[],
+        rotation_autorisee=False,
+        epaisseur_lame=5,
+    )
+
+    assert len(candidats) == 1
+
+# Fonction qui teste le cas où la pièce rentre pile avec le trait de coupe (épaisseur de lame)
+def test_piece_rentre_avec_kerf_exact():
+    piece = Piece(
+        designation="Pièce",
+        largeur=600,
+        longueur=400,
+    )
+
+    zone = Rectangle(
+        x=0,
+        y=0,
+        largeur=605,
+        longueur=405,
+    )
+
+    candidats = trouver_candidats(
+        piece=piece,
+        zones_libres=[zone],
+        placements_existants=[],
+        rotation_autorisee=False,
+        epaisseur_lame=5,
+    )
+
+    assert len(candidats) == 1

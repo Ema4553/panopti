@@ -40,13 +40,14 @@ def creer_panneau(rectangle: Rectangle) -> PanneauEnCours:
 
 
 # Fonction qui place une pièce dans un panneau et qui met à jour les zones libres
-def appliquer_placement(panneau: PanneauEnCours, candidat: CandidatPlacement) -> None:
+def appliquer_placement(panneau: PanneauEnCours, candidat: CandidatPlacement, epaisseur_lame: int = 0) -> None:
     panneau.zones_libres.remove(candidat.zone)
 
     nouvelles_zones = decouper_zone(
         zone=candidat.zone,
         largeur_piece=candidat.largeur,
-        longueur_piece=candidat.longueur
+        longueur_piece=candidat.longueur,
+        epaisseur_lame=epaisseur_lame
     )
 
     panneau.zones_libres.extend(nouvelles_zones)
@@ -57,7 +58,8 @@ def appliquer_placement(panneau: PanneauEnCours, candidat: CandidatPlacement) ->
 def optimiser_decoupe(
         pieces: list[Piece],
         panneau: Rectangle,
-        rotation_autorisee: bool = True
+        rotation_autorisee: bool = True,
+        epaisseur_lame: int = 0
 ) -> ResultatOptimisation:
     panneaux: list[PanneauEnCours] = []
     pieces_non_placees: list[Piece] = []
@@ -72,7 +74,8 @@ def optimiser_decoupe(
                 piece=piece,
                 zones_libres=panneau_en_cours.zones_libres,
                 placements_existants=[],
-                rotation_autorisee=rotation_autorisee
+                rotation_autorisee=rotation_autorisee,
+                epaisseur_lame=epaisseur_lame
             )
 
             candidat = choisir_meilleur_candidat(candidats)
@@ -82,7 +85,8 @@ def optimiser_decoupe(
 
             appliquer_placement(
                 panneau=panneau_en_cours,
-                candidat=candidat
+                candidat=candidat,
+                epaisseur_lame=epaisseur_lame
             )
 
             piece_placee = True
@@ -98,7 +102,8 @@ def optimiser_decoupe(
             piece=piece,
             zones_libres=nouveau_panneau.zones_libres,
             placements_existants=[],
-            rotation_autorisee=rotation_autorisee
+            rotation_autorisee=rotation_autorisee,
+            epaisseur_lame=epaisseur_lame
         )
 
         candidat = choisir_meilleur_candidat(candidats)
@@ -110,7 +115,8 @@ def optimiser_decoupe(
 
         appliquer_placement(
             panneau=nouveau_panneau,
-            candidat=candidat
+            candidat=candidat,
+            epaisseur_lame=epaisseur_lame
         )
 
         panneaux.append(nouveau_panneau)
