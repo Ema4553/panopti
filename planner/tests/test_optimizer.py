@@ -168,3 +168,92 @@ def test_optimizer_prend_en_compte_le_kerf():
     )
 
     assert len(resultat.panneaux) == 2
+
+
+def test_optimizer_respecte_grain_avec_rotation_autorisee():
+    piece = Piece(
+        designation="Façade",
+        largeur=600,
+        longueur=400,
+        grain_direction="width",
+    )
+
+    panneau = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=700,
+    )
+
+    resultat = optimiser_decoupe(
+        pieces=[piece],
+        panneau=panneau,
+        rotation_autorisee=True,
+        grain_strict=True,
+    )
+
+    assert len(resultat.panneaux) == 1
+    assert len(resultat.pieces_non_placees) == 0
+
+    placement = resultat.panneaux[0].placements[0]
+
+    assert placement.retournee is True
+    assert placement.largeur == 400
+    assert placement.longueur == 600
+
+
+def test_optimizer_ne_place_pas_piece_si_grain_incompatible():
+    piece = Piece(
+        designation="Façade",
+        largeur=600,
+        longueur=400,
+        grain_direction="width",
+    )
+
+    panneau = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=700,
+    )
+
+    resultat = optimiser_decoupe(
+        pieces=[piece],
+        panneau=panneau,
+        rotation_autorisee=False,
+        grain_strict=True,
+    )
+
+    assert len(resultat.panneaux) == 0
+    assert len(resultat.pieces_non_placees) == 1
+    assert resultat.pieces_non_placees[0] == piece
+
+def test_optimizer_prend_en_compte_epaisseur_lame():
+    pieces = [
+        Piece(designation="Côté gauche", largeur=600, longueur=400),
+        Piece(designation="Côté droit", largeur=600, longueur=400),
+    ]
+
+    panneau = Rectangle(
+        x=0,
+        y=0,
+        largeur=1000,
+        longueur=800,
+    )
+
+    resultat_sans_kerf = optimiser_decoupe(
+        pieces=pieces,
+        panneau=panneau,
+        rotation_autorisee=False,
+        epaisseur_lame=0,
+    )
+
+    resultat_avec_kerf = optimiser_decoupe(
+        pieces=pieces,
+        panneau=panneau,
+        rotation_autorisee=False,
+        epaisseur_lame=5,
+    )
+
+    assert len(resultat_sans_kerf.panneaux) == 1
+    assert len(resultat_avec_kerf.panneaux) == 2
