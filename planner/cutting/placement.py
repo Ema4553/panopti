@@ -82,9 +82,7 @@ def orientation_respecte_grain(
 def trouver_candidats(
         piece: Piece,
         zones_libres: list[Rectangle],
-        placements_existants: list[Rectangle],
         rotation_autorisee: bool = True,
-        epaisseur_lame: int = 0,
         grain_strict: bool = False
 ) -> list[CandidatPlacement]:
     candidats = []

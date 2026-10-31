@@ -74,9 +74,7 @@ def optimiser_decoupe(
             candidats = trouver_candidats(
                 piece=piece,
                 zones_libres=panneau_en_cours.zones_libres,
-                placements_existants=[],
                 rotation_autorisee=rotation_autorisee,
-                epaisseur_lame=epaisseur_lame,
                 grain_strict=grain_strict
             )
 
@@ -103,9 +101,7 @@ def optimiser_decoupe(
         candidats = trouver_candidats(
             piece=piece,
             zones_libres=nouveau_panneau.zones_libres,
-            placements_existants=[],
             rotation_autorisee=rotation_autorisee,
-            epaisseur_lame=epaisseur_lame,
             grain_strict=grain_strict
         )
 

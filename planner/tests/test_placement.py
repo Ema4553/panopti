@@ -161,7 +161,6 @@ def test_trouver_candidats_avec_rotation():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=zones,
-        placements_existants=[],
         rotation_autorisee=True,
     )
 
@@ -191,7 +190,6 @@ def test_trouver_candidats_sans_rotation():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=zones,
-        placements_existants=[],
         rotation_autorisee=False,
     )
 
@@ -224,7 +222,6 @@ def test_choisir_meilleur_candidat():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=zones,
-        placements_existants=[],
         rotation_autorisee=False,
     )
 
@@ -251,9 +248,7 @@ def test_kerf_reduit_la_zone_restante():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=[zone],
-        placements_existants=[],
         rotation_autorisee=False,
-        epaisseur_lame=5,
     )
 
     assert len(candidats) == 1
@@ -276,9 +271,7 @@ def test_piece_rentre_avec_kerf_exact():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=[zone],
-        placements_existants=[],
         rotation_autorisee=False,
-        epaisseur_lame=5,
     )
 
     assert len(candidats) == 1
@@ -302,7 +295,6 @@ def test_grain_length_interdit_rotation_si_strict():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=[zone],
-        placements_existants=[],
         rotation_autorisee=True,
         grain_strict=True,
     )
@@ -329,7 +321,6 @@ def test_grain_width_impose_rotation_si_strict():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=[zone],
-        placements_existants=[],
         rotation_autorisee=True,
         grain_strict=True,
     )
@@ -356,7 +347,6 @@ def test_grain_null_n_impose_aucune_orientation():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=[zone],
-        placements_existants=[],
         rotation_autorisee=True,
         grain_strict=True,
     )
@@ -382,7 +372,6 @@ def test_grain_non_strict_autorise_rotation():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=[zone],
-        placements_existants=[],
         rotation_autorisee=True,
         grain_strict=False,
     )
@@ -408,7 +397,6 @@ def test_grain_strict_et_rotation_interdite_rend_piece_impossible():
     candidats = trouver_candidats(
         piece=piece,
         zones_libres=[zone],
-        placements_existants=[],
         rotation_autorisee=False,
         grain_strict=True,
     )
