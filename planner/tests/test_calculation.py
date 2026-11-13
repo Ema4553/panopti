@@ -165,6 +165,10 @@ def test_calculer_decoupe_lance_optimisation(projet_avec_panneau):
     )
 
     assert nombre_pieces_placees == 2
+    assert resultat.nb_panneaux_utilises == 1
+    assert resultat.surface_totale_panneaux == 3_125_000
+    assert resultat.surface_pieces_placees == 480_000
+    assert resultat.taux_chute_global == pytest.approx(84.64)
 
 
 @pytest.mark.django_db

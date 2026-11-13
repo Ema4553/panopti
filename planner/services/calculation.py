@@ -1,10 +1,19 @@
+from dataclasses import dataclass
 from planner.models import Projet, OptionsDeCoupe
 from planner.cutting.placement import Piece
 from planner.cutting.geometry import Rectangle
 from planner.cutting.optimizer import (
     optimiser_decoupe,
     ResultatOptimisation,
+    PanneauEnCours
 )
+from planner.services.metrics import (
+    nombre_de_panneaux,
+    surface_totale_panneaux,
+    surface_totale_pieces,
+    taux_chute_global,
+)
+
 
 def construire_pieces(projet: Projet) -> list[Piece]:
     pieces = []
@@ -46,10 +55,20 @@ def construire_parametres_coupe(
     }
 
 
+@dataclass
+class ResultatDecoupe:
+    panneaux: list[PanneauEnCours]
+    pieces_non_placees: list[Piece]
+    nb_panneaux_utilises: int
+    surface_totale_panneaux: int
+    surface_pieces_placees: int
+    taux_chute_global: float
+
+
 def calculer_decoupe(
     projet: Projet,
     options: OptionsDeCoupe,
-) -> ResultatOptimisation:
+) -> ResultatDecoupe:
 
     if options.projet_id != projet.pk:
         raise ValueError(
@@ -60,10 +79,19 @@ def calculer_decoupe(
     panneau = construire_panneau(projet)
     parametres = construire_parametres_coupe(options)
 
-    resultat = optimiser_decoupe(
+    optimisation = optimiser_decoupe(
         pieces=pieces,
         panneau=panneau,
         **parametres,
     )
 
-    return resultat
+    panneaux = optimisation.panneaux
+
+    return ResultatDecoupe(
+        panneaux=panneaux,
+        pieces_non_placees=optimisation.pieces_non_placees,
+        nb_panneaux_utilises=nombre_de_panneaux(panneaux),
+        surface_totale_panneaux=surface_totale_panneaux(panneaux),
+        surface_pieces_placees=surface_totale_pieces(panneaux),
+        taux_chute_global=taux_chute_global(panneaux),
+    )
