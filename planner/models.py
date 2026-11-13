@@ -123,6 +123,7 @@ class OptionsDeCoupe(models.Model):
 class Status(models.TextChoices):
     PENDING = "pending", "En attente"
     SUCCESS = "success", "Réussi"
+    WARNING = "warning", "Terminé avec avertissements"
     ERROR = "error", "Erreur"
 
 
@@ -232,3 +233,45 @@ class Placement(models.Model):
 
     def __str__(self):
         return f"{self.piece_requise.designation} #{self.numero_exemplaire_piece}"
+
+
+# ------------------------------------------------------------------------------------------------
+# Définition des pièces qui n'ont pas pu être placées lors d'un calcul
+class PieceNonPlacee(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    resultat_calcul = models.ForeignKey(
+        ResultatDuCalcul,
+        on_delete=models.CASCADE,
+        related_name="pieces_non_placees"
+    )
+
+    piece_requise = models.ForeignKey(
+        PieceRequise,
+        on_delete=models.PROTECT,
+        related_name="pieces_non_placees"
+    )
+
+    numero_exemplaire_piece = models.PositiveIntegerField()
+
+    def __str__(self):
+        return (
+            f"{self.piece_requise.designation} "
+            f"#{self.numero_exemplaire_piece} non placée"
+        )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "resultat_calcul",
+                    "piece_requise",
+                    "numero_exemplaire_piece",
+                ],
+                name="unique_piece_non_placee_par_calcul",
+            )
+        ]
