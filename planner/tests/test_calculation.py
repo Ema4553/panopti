@@ -19,7 +19,7 @@ def projet_avec_panneau(db):
 
 @pytest.mark.django_db
 def test_construire_pieces_avec_quantite_unitaire(projet_avec_panneau):
-    PieceRequise.objects.create(
+    piece_requise = PieceRequise.objects.create(
         projet=projet_avec_panneau,
         designation="Côté",
         longueur=600,
@@ -35,6 +35,7 @@ def test_construire_pieces_avec_quantite_unitaire(projet_avec_panneau):
     assert pieces[0].largeur == 400
     assert pieces[0].longueur == 600
     assert pieces[0].numero_exemplaire_piece == 1
+    assert pieces[0].piece_requise_id == piece_requise.pk
 
 @pytest.mark.django_db
 def test_construire_pieces_decompose_quantite(projet_avec_panneau):
@@ -48,6 +49,16 @@ def test_construire_pieces_decompose_quantite(projet_avec_panneau):
     )
 
     pieces = construire_pieces(projet_avec_panneau)
+
+    piece_requise = PieceRequise.objects.get(
+    projet=projet_avec_panneau,
+    designation="Côté",
+    )
+
+    assert all(
+        piece.piece_requise_id == piece_requise.pk
+        for piece in pieces
+    )
 
     assert len(pieces) == 3
     assert [piece.numero_exemplaire_piece for piece in pieces] == [1, 2, 3]

@@ -28,6 +28,7 @@ def construire_pieces(projet: Projet) -> list[Piece]:
                     longueur=piece_requise.longueur,
                     numero_exemplaire_piece=numero,
                     grain_direction=piece_requise.grain_direction,
+                    piece_requise_id=piece_requise.pk,
                 )
             )
 

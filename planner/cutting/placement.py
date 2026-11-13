@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from .geometry import Rectangle, est_dans, se_chevauchent
+from uuid import UUID
 
 @dataclass(frozen=True)
 class Piece: 
@@ -8,6 +9,7 @@ class Piece:
     longueur: int
     numero_exemplaire_piece: int = 1
     grain_direction: str | None = None
+    piece_requise_id: UUID | None = None
 
     def dimensions(self, retournee: bool = False) -> tuple[int, int]:
         if retournee:
