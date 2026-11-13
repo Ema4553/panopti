@@ -1,6 +1,10 @@
 from planner.models import Projet, OptionsDeCoupe
 from planner.cutting.placement import Piece
 from planner.cutting.geometry import Rectangle
+from planner.cutting.optimizer import (
+    optimiser_decoupe,
+    ResultatOptimisation,
+)
 
 def construire_pieces(projet: Projet) -> list[Piece]:
     pieces = []
@@ -40,3 +44,26 @@ def construire_parametres_coupe(
         "rotation_autorisee": options.rotation_autorisee,
         "grain_strict": options.grain_strict,
     }
+
+
+def calculer_decoupe(
+    projet: Projet,
+    options: OptionsDeCoupe,
+) -> ResultatOptimisation:
+
+    if options.projet_id != projet.pk:
+        raise ValueError(
+            "Les options de coupe ne correspondent pas au projet."
+        )
+
+    pieces = construire_pieces(projet)
+    panneau = construire_panneau(projet)
+    parametres = construire_parametres_coupe(options)
+
+    resultat = optimiser_decoupe(
+        pieces=pieces,
+        panneau=panneau,
+        **parametres,
+    )
+
+    return resultat

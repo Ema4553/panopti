@@ -1,6 +1,6 @@
 import pytest
 from planner.models import Projet, PanneauType, PieceRequise, OptionsDeCoupe
-from planner.services.calculation import construire_pieces, construire_panneau, construire_parametres_coupe
+from planner.services.calculation import construire_pieces, construire_panneau, construire_parametres_coupe, calculer_decoupe
 
 @pytest.fixture
 def projet_avec_panneau(db):
@@ -131,3 +131,67 @@ def test_construire_parametres_recupere_options_rotation_et_grain(
 
     assert parametres["rotation_autorisee"] is False
     assert parametres["grain_strict"] is True
+
+
+@pytest.mark.django_db
+def test_calculer_decoupe_lance_optimisation(projet_avec_panneau):
+    PieceRequise.objects.create(
+        projet=projet_avec_panneau,
+        designation="Côté",
+        longueur=600,
+        largeur=400,
+        epaisseur=18,
+        quantite=2,
+    )
+
+    options = OptionsDeCoupe.objects.create(
+        projet=projet_avec_panneau,
+        epaisseur_lame="5",
+        rotation_autorisee=True,
+        grain_strict=False,
+    )
+
+    resultat = calculer_decoupe(
+        projet=projet_avec_panneau,
+        options=options,
+    )
+
+    assert len(resultat.panneaux) == 1
+    assert len(resultat.pieces_non_placees) == 0
+
+    nombre_pieces_placees = sum(
+        len(panneau.placements)
+        for panneau in resultat.panneaux
+    )
+
+    assert nombre_pieces_placees == 2
+
+
+@pytest.mark.django_db
+def test_calculer_decoupe_respecte_options_grain(
+    projet_avec_panneau,
+):
+    PieceRequise.objects.create(
+        projet=projet_avec_panneau,
+        designation="Façade",
+        longueur=600,
+        largeur=400,
+        epaisseur=18,
+        quantite=1,
+        grain_direction="width",
+    )
+
+    options = OptionsDeCoupe.objects.create(
+        projet=projet_avec_panneau,
+        epaisseur_lame="5",
+        rotation_autorisee=False,
+        grain_strict=True,
+    )
+
+    resultat = calculer_decoupe(
+        projet=projet_avec_panneau,
+        options=options,
+    )
+
+    assert len(resultat.panneaux) == 0
+    assert len(resultat.pieces_non_placees) == 1
