@@ -1,6 +1,6 @@
 import pytest
-from planner.models import Projet, PanneauType, PieceRequise
-from planner.services.calculation import construire_pieces
+from planner.models import Projet, PanneauType, PieceRequise, OptionsDeCoupe
+from planner.services.calculation import construire_pieces, construire_panneau, construire_parametres_coupe
 
 @pytest.fixture
 def projet_avec_panneau(db):
@@ -78,3 +78,56 @@ def test_construire_pieces_gere_plusieurs_references(projet_avec_panneau):
     assert len(pieces) == 5
     assert sum(piece.designation == "Côté" for piece in pieces) == 2
     assert sum(piece.designation == "Fond" for piece in pieces) == 3
+
+
+@pytest.mark.django_db
+def test_construire_panneau_depuis_projet(projet_avec_panneau):
+    panneau = construire_panneau(projet_avec_panneau)
+
+    assert panneau.x == 0
+    assert panneau.y == 0
+    assert panneau.largeur == 1250
+    assert panneau.longueur == 2500
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("epaisseur_lame", "attendu"),
+    [
+        ("3", 3),
+        ("5", 5),
+    ],
+)
+def test_construire_parametres_convertit_epaisseur_lame(
+    projet_avec_panneau,
+    epaisseur_lame,
+    attendu,
+):
+    options = OptionsDeCoupe.objects.create(
+        projet=projet_avec_panneau,
+        epaisseur_lame=epaisseur_lame,
+        rotation_autorisee=True,
+        grain_strict=False,
+    )
+
+    parametres = construire_parametres_coupe(options)
+
+    assert parametres["epaisseur_lame"] == attendu
+    assert isinstance(parametres["epaisseur_lame"], int)
+
+
+@pytest.mark.django_db
+def test_construire_parametres_recupere_options_rotation_et_grain(
+    projet_avec_panneau,
+):
+    options = OptionsDeCoupe.objects.create(
+        projet=projet_avec_panneau,
+        epaisseur_lame="5",
+        rotation_autorisee=False,
+        grain_strict=True,
+    )
+
+    parametres = construire_parametres_coupe(options)
+
+    assert parametres["rotation_autorisee"] is False
+    assert parametres["grain_strict"] is True

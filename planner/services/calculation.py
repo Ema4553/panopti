@@ -1,5 +1,6 @@
-from planner.models import Projet
+from planner.models import Projet, OptionsDeCoupe
 from planner.cutting.placement import Piece
+from planner.cutting.geometry import Rectangle
 
 def construire_pieces(projet: Projet) -> list[Piece]:
     pieces = []
@@ -18,3 +19,24 @@ def construire_pieces(projet: Projet) -> list[Piece]:
             )
 
     return pieces
+
+
+def construire_panneau(projet: Projet) -> Rectangle:
+    panneau_type = projet.panneau_type
+
+    return Rectangle(
+        x=0,
+        y=0,
+        largeur=panneau_type.largeur,
+        longueur=panneau_type.longueur,
+    )
+
+
+def construire_parametres_coupe(
+    options: OptionsDeCoupe,
+) -> dict[str, int | bool]:
+    return {
+        "epaisseur_lame": int(options.epaisseur_lame),
+        "rotation_autorisee": options.rotation_autorisee,
+        "grain_strict": options.grain_strict,
+    }
